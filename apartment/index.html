@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Oosterlingen — Apartment 3D model</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#f4f1ec;--ink:#2b2824;--mute:#7a736a;--line:#e2dcd2;--card:#fffdf9;--drw:#2f6f8f;--asm:#b0702a;--warn:#b5432f}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,system-ui,sans-serif;overflow:hidden}
+  #app{display:flex;height:100%}
+  #panel{width:340px;flex:none;background:var(--card);border-right:1px solid var(--line);overflow-y:auto;padding:18px 18px 28px}
+  #view{position:relative;flex:1;min-width:0}
+  #view canvas{display:block}
+  h1{font-size:17px;margin:0 0 2px;font-weight:600;letter-spacing:-.01em}
+  .sub{color:var(--mute);font-size:12.5px;margin-bottom:14px}
+  h2{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);margin:18px 0 8px;font-weight:600}
+  .btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  button.v{border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 8px;font:inherit;font-size:13px;cursor:pointer;color:var(--ink);text-align:left}
+  button.v:hover{border-color:#c9bfb0}
+  button.v.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  label.t{display:flex;align-items:center;gap:8px;margin:5px 0;cursor:pointer;font-size:13px}
+  .row{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px}
+  .row b{font-weight:500;white-space:nowrap}
+  .row span{color:var(--mute)}
+  .k{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:0}
+  .note{font-size:12.5px;background:#fbf3ea;border:1px solid #efdcc6;border-radius:8px;padding:8px 10px;margin:6px 0}
+  .note.w{background:#fbeeeb;border-color:#efcdc6}
+  input[type=range]{width:100%}
+  .lbl{font:500 11px/1 Inter,system-ui,sans-serif;padding:3px 6px;border-radius:5px;color:#fff;white-space:nowrap;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.18)}
+  .lbl.d{background:var(--drw)} .lbl.a{background:var(--asm)} .lbl.w{background:var(--warn)}
+  #hint{position:absolute;left:12px;bottom:10px;font-size:12px;color:var(--mute);background:rgba(255,253,249,.85);padding:4px 8px;border-radius:6px}
+  #toggle{display:none}
+  #rooms{display:flex;gap:6px;margin:0 0 14px}
+  #rooms button{flex:1;border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 6px;font:inherit;font-size:13px;font-weight:500;cursor:pointer;color:var(--ink)}
+  #rooms button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .lbl.rm{background:rgba(43,40,36,.82);font-size:12px;padding:4px 8px;text-align:center;line-height:1.25}
+  .lbl.rm span{display:block;font-weight:400;font-size:11px;opacity:.8}
+  #jump,#kjump,nav.jn{position:sticky;top:-18px;z-index:2;background:var(--card);display:flex;flex-wrap:wrap;gap:5px;padding:8px 0 10px;margin:0 0 4px;border-bottom:1px solid var(--line)}
+  #jump a,#kjump a,nav.jn a{font-size:12px;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:3px 9px;background:#fff}
+  #jump a:hover,#kjump a:hover,nav.jn a:hover{border-color:#c9bfb0}
+  #pad{position:absolute;right:12px;bottom:10px;display:grid;grid-template-columns:repeat(3,34px);grid-template-rows:repeat(3,34px);gap:4px}
+  #pad button{border:1px solid var(--line);background:rgba(255,253,249,.92);border-radius:8px;font-size:14px;cursor:pointer;color:var(--ink)}
+  #pad button:hover{border-color:#c9bfb0}
+  #pad [data-m=up]{grid-column:2;grid-row:1} #pad [data-m=left]{grid-column:1;grid-row:2} #pad [data-m=center]{grid-column:2;grid-row:2} #pad [data-m=right]{grid-column:3;grid-row:2} #pad [data-m=down]{grid-column:2;grid-row:3}
+  #view.panning canvas{cursor:grab}
+  .mat{margin:0 0 12px}
+  .mat .cap{font-size:12px;color:var(--mute);margin-bottom:4px;display:flex;justify-content:space-between}
+  .opts{display:grid;gap:5px}
+  .opt{display:flex;gap:9px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:6px 8px;cursor:pointer;background:#fff;font-size:12.5px}
+  .opt.on{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+  .sw{width:30px;height:30px;border-radius:5px;flex:none;border:1px solid rgba(0,0,0,.08);background-size:cover}
+  .opt small{display:block;color:var(--mute);font-size:11.5px;line-height:1.3}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+  .seg button{border:0;background:#fff;font:inherit;font-size:11.5px;padding:3px 8px;cursor:pointer;color:var(--ink)}
+  .seg button.on{background:var(--ink);color:#fff}
+  table.q{width:100%;border-collapse:collapse;font-size:12px}
+  table.q th{text-align:left;font-weight:500;color:var(--mute);padding:4px 3px;border-bottom:1px solid var(--line)}
+  table.q td{padding:5px 3px;border-bottom:1px dashed var(--line);vertical-align:top}
+  table.q td.n,table.q th.n{text-align:right;white-space:nowrap}
+  table.q tr.tot td{font-weight:600;border-bottom:0;border-top:1px solid var(--ink)}
+  table.q tr.cur td{background:#f3ede4}
+  table.q tr.click{cursor:pointer}
+  table.q a{color:var(--drw)}
+  @media (max-width:760px){
+    #app{flex-direction:column-reverse}
+    #panel{width:100%;height:42%;border-right:0;border-top:1px solid var(--line)}
+    #panel.min{height:auto;max-height:52px;overflow:hidden}
+    #toggle{display:block;float:right;border:1px solid var(--line);background:#fff;border-radius:6px;font:inherit;font-size:12px;padding:3px 8px}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="panel">
+    <button id="toggle">Panel</button>
+    <div id="rooms"><button data-r="apt">Apartment</button><button data-r="kit">Kitchen &amp; living</button><button data-r="bath">Bathroom</button></div>
+    <div id="pBath">
+    <h1>Bathroom — 3D model v18</h1>
+    <div class="sub">Oosterlingen · De Zwaluwtoren · bouwnummer 7.135 · 3.57 m² (drawing)</div>
+    <div style="display:flex;gap:6px;align-items:center;margin:0 0 8px"><button class="v" id="copySel" style="padding:6px 10px">Copy my selection</button><span id="copyMsg" style="font-size:12px;color:var(--mute)"></span></div>
+    <textarea id="selBox" readonly style="display:none;width:100%;font:11px/1.3 ui-monospace,monospace;height:44px;margin-bottom:8px"></textarea>
+    <nav id="jump"><a href="#" data-j="sec-fix">Fixtures</a><a href="#" data-j="sec-wc">Around WC</a><a href="#" data-j="sec-tiles">Tiles</a><a href="#" data-j="sec-cost">Costs</a><a href="#" data-j="sec-notes">Open points</a></nav>
+
+    <h2>Camera</h2>
+    <div class="btns" id="presets"></div>
+
+    <h2>Show</h2>
+    <label class="t"><input type="checkbox" id="cDims" checked> Dimensions</label>
+    <label class="t"><input type="checkbox" id="cTech" checked> Electrical / ventilation points</label>
+    <label class="t"><input type="checkbox" id="cCut" checked> Cut away walls facing the camera</label>
+    <label class="t"><input type="checkbox" id="cCeil" checked> Ceiling</label>
+    <label class="t"><input type="checkbox" id="cGlass" checked> Shower glass</label>
+    <label class="t"><input type="checkbox" id="cAcc" checked> Accessories (towels, basket, brush, bin)</label>
+    <label class="t"><input type="checkbox" id="cOpen"> Shower door open (Lokla)</label>
+
+    <h2 id="sec-fix">Fixtures — choose &amp; compare</h2>
+    <div id="optUI"></div>
+
+    <h2 id="sec-wc">Around the WC: roll holder, bidet, radiator, shelves &amp; cabinet</h2>
+    <div id="shelfUI"></div>
+    <label class="t"><input type="checkbox" id="cEve"> Evening light (main lights dimmed, to judge the LEDs)</label>
+
+
+    <h2 id="sec-tiles">Tiles</h2>
+    <div id="matUI"></div>
+
+    <h2 id="sec-cost">Tiles — quantities &amp; cost <span style="text-transform:none;letter-spacing:0;font-weight:400">(HORNBACH web price + 8% discount)</span></h2>
+    <div id="qty"></div>
+    <div style="font-size:12px;color:var(--mute);margin-top:6px">Tile count follows a cut plan: tiles laid from the corner, every cut piece taken from a new tile or a leftover offcut (5 mm saw cut, no rotation so the pattern keeps its direction), +5% breakage. Changes live with ceiling height and orientation. Web prices checked 15 Nov 2026 — can change. Excludes adhesive, grout, sealant, profiles.</div>
+
+    <h2>Sanitary <span style="text-transform:none;letter-spacing:0;font-weight:400">(Sanitairwinkel web price · 15% off Fortifura, QeramiQ, Saniclass, Zeza, Modano, Rosani, Adema, Ozean · 10% off other brands)</span></h2>
+    <div id="san"></div>
+    <div id="grand" style="margin-top:10px"></div>
+
+    <h2>Compare all combinations</h2>
+    <div id="combos"></div>
+
+    <h2>Ceiling height <span id="hval" style="text-transform:none;letter-spacing:0;color:var(--ink)"></span></h2>
+    <input type="range" id="hgt" min="2300" max="2700" step="10" value="2600">
+    <div style="font-size:12px;color:var(--mute)">Not on the drawing — assumed 2600 mm. Set it to the real value once confirmed.</div>
+
+    <h2>Legend</h2>
+    <div style="font-size:12.5px"><span class="k" style="background:var(--drw)"></span>From the drawing (scaled, ±10 mm)<br>
+    <span class="k" style="background:var(--asm)"></span>Assumed / design proposal — to confirm<br>
+    <span class="k" style="background:var(--warn)"></span>Conflict to resolve</div>
+
+    <h2>From the drawing</h2>
+    <div id="drw"></div>
+
+    <h2>Assumed / proposed (v1)</h2>
+    <div id="asm"></div>
+
+    <h2 id="sec-notes">Open points</h2>
+    <div class="note w"><b>Shower niche door width.</b> Lokla Linea 140 adjusts 1370–1410 mm. Niche on the drawing is 1400 (scales ≈1385), minus tile + adhesive on both end walls (≈15 + 16 mm) → ≈1369 or less. Measure the finished niche at 3 heights before ordering.</div>
+    <div class="note w"><b>Vanity top.</b> BRAUER Joy is sold without top. Tiled top option: needs a waterproof backer board, edge finish and a Ø40 mm drain hole; with the 60×60 floor tile there is a seam (placed under the basin).</div>
+    <div class="note w"><b>Wall stack at the basin.</b> Basin rim 870 → wall tap ≈975 → 80 cm oval mirror (1020–1820) → wall light point at 1800 sits behind the mirror. Move the light point to ≈1950–2000, or hang the mirror horizontally.</div>
+    <div class="note w"><b>Socket 1200</b> (≈300–380 from door wall) touches the mirror edge (345). Shift socket ≈10 cm toward the door wall.</div>
+    <div class="note w"><b>Bidet hand shower — drinking-water rules.</b> The Hansgrohe set's own product page says it is not suitable in countries where EN 1717 applies; the Netherlands applies EN 1717 (NEN 1006 + Waterwerkbladen, protection up to fluid class 5), and a hand sprayer that can reach into a WC bowl is treated as class 5. Ask your installer for a compliant set-up before buying. Also needed (not in the set): stop valve, wall outlet, supply pipe in the pre-wall — plan before the pre-wall is closed.</div>
+    <div class="note w"><b>Shelf LEDs need power before tiling.</b> No electrical point above the WC on the drawing. Plan a 24 V LED strip (IP44 or higher — this spot is within ~60 cm of an open walk-in), the driver outside the wet zone (e.g. in the pre-wall behind a service hatch or outside the bathroom), and a switch (could share switch d). Shelf brackets need a solid back wall — check its construction.</div>
+    <div class="note">In-wall shower thermostat and wall tap need recessed boxes: check that the shower back wall and right wall can be chased (or plan a thin pre-wall).</div>
+    <div class="note">Metal tones from 4 brands: Hansgrohe "brushed bronze", Aqua Vista / Fortifura / INK "brushed copper", Geberit "brushed red gold" — compare samples side by side.</div>
+    <div class="note">Shower depth: label 1400, drawing scales ≈1385 mm. Floor area from labels 3.53 m² vs 3.57 m² stated. Verify on site.</div>
+    </div>
+  <div id="pShared" hidden>
+    <h1 id="kTitle">Apartment — 3D model v2</h1>
+    <div class="sub" id="kSub">Oosterlingen · De Zwaluwtoren · bouwnummer 7.135 · 13th floor · from floor plan KT-7.135 and the Keuken Concurrent kitchen drawings</div>
+    <h2>Camera</h2>
+    <div class="btns" id="kpresets"></div>
+
+    <h2>Show</h2>
+    <label class="t"><input type="checkbox" id="kRoomC" checked> Room names</label>
+    <label class="t"><input type="checkbox" id="kDimsC" checked> Dimensions</label>
+    <label class="t"><input type="checkbox" id="kLabC"> Labels</label>
+    <label class="t"><input type="checkbox" id="kTechC"> Electrical / water points (kitchen)</label>
+    <label class="t"><input type="checkbox" id="kDoll" checked> From above: cut walls at 1.2 m (dollhouse)</label>
+    <label class="t"><input type="checkbox" id="kCut" checked> Cut away walls facing the camera</label>
+    <label class="t"><input type="checkbox" id="kCeil" checked> Ceiling</label>
+    <label class="t"><input type="checkbox" id="kDoors"> Doors open</label>
+    <label class="t"><input type="checkbox" id="kFast"> Fast mode (phones / slower laptops: no shadows)</label>
+  </div>
+  <div id="pApt" hidden>
+    <nav class="jn"><a href="#" data-j="ksec-buy">To buy</a><a href="#" data-j="ksec-floor">Floor</a><a href="#" data-j="ksec-walls">Walls</a><a href="#" data-j="ksec-sun">Daylight</a><a href="#" data-j="asec-rooms">Rooms</a><a href="#" data-j="asec-notes">Open points</a></nav>
+    <h2 id="ksec-buy">Still to buy</h2>
+    <div id="kBuy"></div>
+
+    <h2 id="ksec-floor">Floor</h2>
+    <div class="opts" id="kFloorOpts"></div>
+    <div class="mat"><div class="cap"><span>Kitchen floor</span></div><div class="seg" id="kFloorK"><button data-k="same">Same floor as the rest</button><button data-k="tile">Tiles + transition profile</button></div></div>
+    <div class="mat"><div class="cap"><span>Pattern direction</span></div><div class="seg" id="kFloorDir"><button data-d="along">Toward the façade windows</button><button data-d="across">Across the room</button></div></div>
+    <div id="kFloorQty"></div>
+
+    <h2 id="ksec-walls">Walls &amp; skirting</h2>
+    <div class="cap" style="font-size:12px;color:var(--mute);margin-bottom:4px">Wallpaper to paint over (no plastering)</div>
+    <div class="opts" id="kWpOpts"></div>
+    <div class="cap" style="font-size:12px;color:var(--mute);margin:10px 0 4px">Wall paint</div>
+    <div class="opts" id="kPaintOpts"></div>
+    <div class="cap" style="font-size:12px;color:var(--mute);margin:10px 0 4px;display:flex;justify-content:space-between"><span>Skirting</span><label style="display:flex;gap:5px;align-items:center;cursor:pointer"><input type="checkbox" id="kSkOn"> show</label></div>
+    <div class="opts" id="kSkOpts"></div>
+    <div style="font-size:12px;color:var(--mute);margin-top:6px">Quantities are for the whole apartment: ≈137 m² wall and ≈60 m skirting (living/kitchen 41 m² / 21.6 m, bedroom 1 34 m² / 13.8 m, bedroom 2 30 m² / 13.1 m, hall 31.5 m² / 11.1 m — from the floor-plan dimensions, wall height 2640). Bathroom, tech room and meter cupboard not included. Wall colour stays white for now.</div>
+
+    <h2 id="ksec-sun">Daylight — Amsterdam, 13th floor</h2>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><input type="date" id="kDate" style="font:inherit;font-size:13px;border:1px solid var(--line);border-radius:6px;padding:3px 6px"><b id="kTimeV" style="font-weight:600"></b></div>
+    <input type="range" id="kTime" min="4" max="23" step="0.25">
+    <div class="seg" id="kDays" style="margin:6px 0"><button data-d="now">Now</button><button data-d="03-21">21 Mar</button><button data-d="06-21">21 Jun</button><button data-d="09-21">21 Sep</button><button data-d="12-21">21 Dec</button></div>
+    <div style="margin:4px 0 6px"><button class="v" id="kPlay" style="padding:6px 10px">▶ Play the day</button></div>
+    <label class="t"><input type="checkbox" id="kSun"> Direct sunlight (off = overcast)</label>
+    <label class="t"><input type="checkbox" id="kLamps"> Ceiling lights on (the 3 light points from the floor plan)</label>
+    <div id="sunInfo"></div>
+    <div style="font-size:12px;color:var(--mute);margin-top:6px">North arrow on the floor plan points up-right, so the kitchen window and the living window next to it face south-east (≈135°); the three side windows of the living room face north-east (≈45°). Nothing outside is modelled as blocking the sun — at 13 floors up that is close to reality, but check neighbouring towers.</div>
+
+    <h2>Window frames <span style="text-transform:none;letter-spacing:0;font-weight:400">(colour not on the drawings)</span></h2>
+    <div class="seg" id="kFrame"><button data-f="anth">Anthracite</button><button data-f="white">White</button></div>
+
+    <h2 id="asec-rooms">Rooms (floor plan)</h2>
+    <div id="aRooms"></div>
+
+    <h2 id="asec-notes">Open points</h2>
+    <div class="note w"><b>Floor heating + underlay.</b> Klik Patterns PVC has no underlay built in; Flexxfloors' laying manual asks for a PVC-suitable underlay with high compressive strength (&gt; 400 kPa) and a subfloor that stays below 28 °C. Their own PVC underlay (15 dB, 0.007 m²K/W) is in the cost table. Do not lay a second underlay under Silk (it has one built in). Check the VvE rules for a minimum contact-sound improvement before buying — apartment buildings often set one.</div>
+    <div class="note"><b>Ceiling height for the bathroom.</b> The kitchen drawings give 2640 floor-to-ceiling; the bathroom model still assumes 2600 (bathrooms often get a lowered ceiling — confirm with Vink Bouw).</div>
+    <div class="note"><b>Tiles vs PVC height.</b> A tiled kitchen (tile + adhesive ≈ 10–12 mm) and click PVC on underlay (5 + 1–2 mm) end at different heights: choose a transition profile that bridges it, or adjust the screed. The model puts the profile in line with the kitchen side of the opening, so the whole opening reads as living-room floor.</div>
+    <div class="note"><b>Hall ceiling.</b> Many Dutch new-builds lower the hall ceiling for ventilation ducts; the model uses 2640 everywhere. Confirm with Vink Bouw — it changes the wallpaper and paint quantities a little.</div>
+    <div class="note"><b>Bedrooms, hall and balcony</b> are drawn from floor plan KT-7.135 (scaled, ±30 mm). Door swings, window divisions and the balcony screens follow the plan; window frame details and door heights (2315) are assumed.</div>
+    <div class="note">Wall colour is still white. Next step: choosing wall colours per room.</div>
+  </div>
+  <div id="pKit" hidden>
+    <nav class="jn"><a href="#" data-j="ksec-wm">Washer</a><a href="#" data-j="ksec-bs">Backsplash</a><a href="#" data-j="ksec-led">LEDs</a><a href="#" data-j="ksec-order">Order</a><a href="#" data-j="ksec-mat">Materials</a><a href="#" data-j="ksec-notes">Open points</a></nav>
+    <h2 id="ksec-wm">Washing machine &amp; pull-out</h2>
+    <label class="t"><input type="checkbox" id="kApoOpen"> Open the apothecary pull-out (right of the machine)</label>
+    <div class="cap" style="font-size:12px;color:var(--mute);display:flex;justify-content:space-between;margin-top:6px"><span>Gap between the hose connections and the wall</span><b id="kWmGapV" style="color:var(--ink)"></b></div>
+    <input type="range" id="kWmGap" min="0" max="60" step="5">
+    <div id="kWmInfo" style="font-size:12.5px;margin-top:4px"></div>
+    <div style="font-size:12px;color:var(--mute);margin-top:4px">Samsung WD80J6A00AW: you measured 700 mm from the hose connections at the back to the front of the door. A hose bending sideways off the connections needs a little extra space behind.</div>
+
+    <h2 id="ksec-bs">Backsplash tiles</h2>
+    <div class="mat"><div class="cap"><span>Where</span></div><div class="seg" id="kBsZone"><button data-z="none">None</button><button data-z="between">Between the units</button><button data-z="full">Whole wall</button></div></div>
+    <div class="opts" id="kBsOpts"></div>
+    <div class="mat" style="margin-top:8px"><div class="cap"><span>Laying pattern</span></div><div class="seg" id="kBsLay"><button data-l="h">Horizontal, half bond</button><button data-l="v">Vertical, stacked</button><button data-l="hb">Herringbone</button></div></div>
+    <div id="kBsQty"></div>
+
+    <h2 id="ksec-led">LED strips</h2>
+    <label class="t"><input type="checkbox" id="kLedShelf"> Under the open shelves (both levels)</label>
+    <label class="t"><input type="checkbox" id="kLedCab"> Under the wall cabinets</label>
+    <div class="mat" style="margin-top:6px"><div class="cap"><span>Colour temperature</span></div><div class="seg" id="kLedK"><button data-k="2700">2700 K warm</button><button data-k="3000">3000 K</button><button data-k="4000">4000 K neutral</button></div></div>
+    <div class="cap" style="font-size:12px;color:var(--mute)">Brightness</div><input type="range" id="kLedB" min="0.2" max="2" step="0.1">
+    <div style="margin:6px 0"><button class="v" id="kLedEve" style="padding:6px 10px">See it in the evening (20:00)</button></div>
+    <div style="font-size:12px;color:var(--mute)">Modelled as an aluminium LED profile with diffuser under each shelf (≈100 mm from the wall, lighting the wall and the shelf below / worktop) and under the front of the wall cabinets (lighting the backsplash and worktop). Products not chosen yet.</div>
+
+    <h2 id="ksec-order">What is in the model — order lines</h2>
+    <div id="kOrder"></div>
+
+    <h2 id="ksec-mat">Materials</h2>
+    <div id="kMat"></div>
+
+    <h2>From the drawings</h2>
+    <div id="kDrw"></div>
+
+    <h2>Assumed (to confirm)</h2>
+    <div id="kAsm"></div>
+
+    <h2 id="ksec-notes">Open points</h2>
+    <div class="note w"><b>Washing-machine connection.</b> The builder's floor plan has the standard WM point in the kitchen's hall-side corner — exactly behind the fridge tall unit (pos. 13). The kitchen puts the washing machine on the long wall, fed from the sink unit (cold water + drain at 1856 from the hall wall, sockets at 750). Ask Vink Bouw to move or cap the standard point, and hand them the leidingschema before the koperskeuze deadline.</div>
+    <div class="note"><b>Backsplash is not in the kitchen order.</b> Tiles go on after the kitchen is installed (or before, if the wall cabinets are hung over them) — agree the order of work with the installer. Behind the Bora cooktop no extra heat protection is needed (no hood, extraction is downward).</div>
+    <div class="note"><b>Final measurement.</b> The kitchen drawing uses 4003 × 2130; the floor plan says 4010 × 2120. The shop re-measures before delivery week 8/2027 — check fillers then.</div>
+    <div class="note"><b>Wall not square.</b> The order notes gaps at the shelves because the walls are not at 90° — shelves 20 and 21 are 1238 and 1222 long.</div>
+    <div class="note"><b>Window at the end of the run.</b> The top view marks 650 + 850 = 1500 at the façade. On the floor plan the opening sash is the right half of the kitchen window (≈1016–2016), so the worktop and shelves (650 / 150 deep) sit in front of the fixed part only.</div>
+    <div class="note w"><b>Power for the LED strips.</b> The leidingschema has no point for under-cabinet or shelf lighting. Plan a 230 V point for the LED driver (e.g. hidden in a wall cabinet), a switch or sensor, and run the 24 V cables to the shelves before the backsplash / paint is done — shelves have hidden fixings, so the cable must come out of the wall right at the profile.</div>
+    <div class="note w"><b>Washing machine vs apothecary pull-out.</b> The machine measures 700 mm from the hose connections to the front of the door; the 150 pull-out (pos. 9) slides past its door at ≈686 mm from the wall. Even with the connections against the wall the door is ≈14 mm in the way, so the pull-out only opens ≈15 cm. Raise it with Keuken Concurrent before the final check-measure (options: swap pos. 9 for a filler/shelf, or re-plan the corner).</div>
+    <div class="note"><b>390 mm above the tall units</b> and above the wall cabinets is open to the 2640 ceiling — leave open, or close with a filler panel.</div>
+  </div>
+  </aside>
+  <main id="view"><div id="hint">Drag: rotate · <b>Space + drag</b>: move up/down/sideways (also right-drag, Shift + drag, arrow keys) · Scroll/pinch: zoom</div>
+  <div id="pad"><button data-m="up" title="Move room up">▲</button><button data-m="left" title="Move left">◀</button><button data-m="center" title="Centre the room">◎</button><button data-m="right" title="Move right">▶</button><button data-m="down" title="Move room down">▼</button></div></main>
+</div>
+
+<script>window.__DEFAULT_MODE='apt';</script>
+<script type="module" src="../assets/model.js"></script>
+</body>
+</html>
