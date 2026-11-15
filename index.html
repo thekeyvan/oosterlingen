@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Oosterlingen — interior plans</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#f4f1ec;--ink:#2b2824;--mute:#7a736a;--line:#e2dcd2;--card:#fffdf9;--accent:#a98d7a}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 Inter,system-ui,sans-serif}
+  main{max-width:860px;margin:0 auto;padding:56px 24px 72px}
+  h1{font-size:30px;font-weight:600;letter-spacing:-.02em;margin:0 0 6px}
+  .lead{color:var(--mute);margin:0 0 36px}
+  h2{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:var(--mute);font-weight:600;margin:40px 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  a.card{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;color:inherit;text-decoration:none;transition:border-color .15s}
+  a.card:hover{border-color:var(--accent)}
+  .card b{display:block;font-size:17px;font-weight:600;margin-bottom:4px}
+  .card span{color:var(--mute);font-size:13.5px}
+  .soon{background:transparent;border:1px dashed var(--line);border-radius:14px;padding:20px;color:var(--mute);font-size:13.5px}
+  .soon b{display:block;color:var(--ink);font-size:16px;font-weight:500;margin-bottom:4px}
+  ul.dl{list-style:none;padding:0;margin:0;background:var(--card);border:1px solid var(--line);border-radius:14px}
+  ul.dl li{display:flex;justify-content:space-between;gap:12px;padding:14px 18px;border-top:1px solid var(--line)}
+  ul.dl li:first-child{border-top:0}
+  ul.dl a{color:var(--ink);font-weight:500}
+  ul.dl small{color:var(--mute)}
+  footer{margin-top:48px;color:var(--mute);font-size:12.5px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Oosterlingen — interior plans</h1>
+  <p class="lead">3D models, product choices and quantities for the apartment fit-out. Every size is in millimetres and was taken from the developer's drawings; check them on site before ordering or building.</p>
+
+  <h2>3D models</h2>
+  <div class="grid">
+    <a class="card" href="bathroom/"><b>Bathroom</b><span>Interactive 3D model: tiles, sanitary ware, shower, storage, with quantities and prices. Rotate it, compare the options, and read every dimension.</span></a>
+    <div class="soon"><b>Whole apartment — walls &amp; floors</b>Paint colours and flooring. Coming next.</div>
+    <div class="soon"><b>Kitchen</b>Layout and finishes. Coming next.</div>
+  </div>
+
+  <h2>Downloads</h2>
+  <ul class="dl" id="downloads">
+    <li><span><a href="downloads/bathroom-3d-model-offline.html" download>Bathroom 3D model — offline file</a><br><small>One HTML file. Open it in any browser; no internet needed.</small></span><small>HTML · 0.9 MB</small></li>
+  </ul>
+
+  <h2>How to use the 3D model</h2>
+  <ul class="dl">
+    <li><span>Drag to rotate · <b>Space + drag</b> (or right-drag) to move · scroll or pinch to zoom · ◎ re-centres the room</span></li>
+    <li><span>The camera buttons jump to set views: from the door, shower, toilet, vanity and others</span></li>
+    <li><span>Blue labels are measured from the drawing, orange labels are assumptions or proposals, red labels are open points</span></li>
+  </ul>
+
+  <footer>Private project page · not an offer · prices incl. VAT, checked 15 Nov 2026</footer>
+</main>
+</body>
+</html>
