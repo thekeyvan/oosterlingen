@@ -165,7 +165,7 @@
     <label class="t"><input type="checkbox" id="kFast"> Fast mode (phones / slower laptops: no shadows)</label>
   </div>
   <div id="pApt" hidden>
-    <nav class="jn"><a href="#" data-j="ksec-buy">To buy</a><a href="#" data-j="ksec-floor">Floor</a><a href="#" data-j="ksec-walls">Walls</a><a href="#" data-j="ksec-sun">Daylight</a><a href="#" data-j="asec-b2">Bedroom 2</a><a href="#" data-j="asec-rooms">Rooms</a><a href="#" data-j="asec-notes">Open points</a></nav>
+    <nav class="jn"><a href="#" data-j="ksec-buy">To buy</a><a href="#" data-j="ksec-floor">Floor</a><a href="#" data-j="ksec-walls">Walls</a><a href="#" data-j="ksec-sun">Daylight</a><a href="#" data-j="asec-b1">Bedroom 1</a><a href="#" data-j="asec-b2">Bedroom 2</a><a href="#" data-j="asec-rooms">Rooms</a><a href="#" data-j="asec-notes">Open points</a></nav>
     <h2 id="ksec-buy">Still to buy</h2>
     <div id="kBuy"></div>
 
@@ -193,6 +193,13 @@
     <label class="t"><input type="checkbox" id="kLamps"> Ceiling lights on (the 3 light points from the floor plan)</label>
     <div id="sunInfo"></div>
     <div style="font-size:12px;color:var(--mute);margin-top:6px">North arrow on the floor plan points up-right, so the kitchen window and the living window next to it face south-east (≈135°); the three side windows of the living room face north-east (≈45°). Nothing outside is modelled as blocking the sun — at 13 floors up that is close to reality, but check neighbouring towers.</div>
+
+    <h2 id="asec-b1">Bedroom 1 — bed &amp; corner wardrobe</h2>
+    <div style="display:flex;gap:6px;margin-bottom:10px"><button class="v" id="b1View" style="padding:6px 10px">View the wardrobe</button><button class="v" id="b1PlanB" style="padding:6px 10px">From above</button></div>
+    <div class="mat"><div class="cap"><span>Corner wardrobe width</span></div><div class="seg" id="b1Ward"><button data-w="800">800</button><button data-w="1000">1000</button><button data-w="1200">1200</button></div></div>
+    <div class="mat"><div class="cap"><span>Bed width</span></div><div class="seg" id="b1Bed"><button data-b="120">120</button><button data-b="140">140</button><button data-b="160">160</button></div></div>
+    <div style="font-size:12px;color:var(--mute);margin-bottom:4px">Front colour and "open the doors" are shared with bedroom 2 (below).</div>
+    <div id="b1Info" style="margin-top:6px"></div>
 
     <h2 id="asec-b2">Bedroom 2 — wardrobes, vanity, bed</h2>
     <div style="display:flex;gap:6px;margin-bottom:10px"><button class="v" id="b2View" style="padding:6px 10px">View the wardrobes</button><button class="v" id="b2PlanB" style="padding:6px 10px">From above</button></div>
