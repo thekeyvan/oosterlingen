@@ -65,7 +65,11 @@
   table.q tr.cur td{background:#f3ede4}
   table.q tr.click{cursor:pointer}
   table.q a{color:var(--drw)}
+  #pTog{position:absolute;left:10px;top:10px;z-index:5;width:34px;height:34px;border:1px solid var(--line);background:rgba(255,255,255,.92);border-radius:8px;font:inherit;font-size:14px;cursor:pointer;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  #pTog:hover{background:#fff}
+  body.pc #panel{display:none}
   @media (max-width:760px){
+    #pTog{display:none}
     #app{flex-direction:column-reverse}
     #panel{width:100%;height:42%;border-right:0;border-top:1px solid var(--line)}
     #panel.min{height:auto;max-height:52px;overflow:hidden}
@@ -200,6 +204,7 @@
     <div class="mat"><div class="cap"><span>Bedroom door hinges on</span></div><div class="seg" id="b1DoorH"><button data-h="right">Right (as drawn)</button><button data-h="left">Left (rehung)</button></div></div>
     <div class="mat"><div class="cap"><span>Built-in wardrobe width</span></div><div class="seg" id="b1Ward"><button data-w="800">800</button><button data-w="1000">1000</button><button data-w="1200">1200</button></div></div>
     <div class="mat"><div class="cap"><span>Sofa bed (Beter Bed Chicago)</span></div><div class="seg" id="b1Sofa"><button data-s="closed">As sofa</button><button data-s="open">Opened as bed</button></div></div>
+    <label class="t"><input type="checkbox" id="b1Platsa"> IKEA PLATSA over the sofa bed (column + 2 wall cabinets)</label>
     <div class="mat"><div class="cap"><span>Desk (IKEA MITTZON)</span></div><div class="seg" id="b1Desk"><button data-d="sit">Sitting 74</button><button data-d="stand">Standing 110</button></div></div>
     <div style="font-size:12px;color:var(--mute);margin-bottom:4px">Front colour and "open the doors" are shared with bedroom 2 (below).</div>
     <div id="b1Info" style="margin-top:6px"></div>
@@ -278,7 +283,7 @@
     <div class="note"><b>390 mm above the tall units</b> and above the wall cabinets is open to the 2640 ceiling — leave open, or close with a filler panel.</div>
   </div>
   </aside>
-  <main id="view"><div id="hint">Drag: rotate · <b>Space + drag</b>: move up/down/sideways (also right-drag, Shift + drag, arrow keys) · Scroll/pinch: zoom</div>
+  <main id="view"><button id="pTog" title="Hide / show the options (key: \)">&#9664;</button><div id="hint">Drag: rotate · <b>Space + drag</b>: move up/down/sideways (also right-drag, Shift + drag, arrow keys) · Scroll/pinch: zoom</div>
   <div id="pad"><button data-m="up" title="Move room up">▲</button><button data-m="left" title="Move left">◀</button><button data-m="center" title="Centre the room">◎</button><button data-m="right" title="Move right">▶</button><button data-m="down" title="Move room down">▼</button></div></main>
 </div>
 
