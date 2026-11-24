@@ -165,7 +165,7 @@
     <label class="t"><input type="checkbox" id="kFast"> Fast mode (phones / slower laptops: no shadows)</label>
   </div>
   <div id="pApt" hidden>
-    <nav class="jn"><a href="#" data-j="ksec-buy">To buy</a><a href="#" data-j="ksec-floor">Floor</a><a href="#" data-j="ksec-walls">Walls</a><a href="#" data-j="ksec-sun">Daylight</a><a href="#" data-j="asec-rooms">Rooms</a><a href="#" data-j="asec-notes">Open points</a></nav>
+    <nav class="jn"><a href="#" data-j="ksec-buy">To buy</a><a href="#" data-j="ksec-floor">Floor</a><a href="#" data-j="ksec-walls">Walls</a><a href="#" data-j="ksec-sun">Daylight</a><a href="#" data-j="asec-b2">Bedroom 2</a><a href="#" data-j="asec-rooms">Rooms</a><a href="#" data-j="asec-notes">Open points</a></nav>
     <h2 id="ksec-buy">Still to buy</h2>
     <div id="kBuy"></div>
 
@@ -193,6 +193,16 @@
     <label class="t"><input type="checkbox" id="kLamps"> Ceiling lights on (the 3 light points from the floor plan)</label>
     <div id="sunInfo"></div>
     <div style="font-size:12px;color:var(--mute);margin-top:6px">North arrow on the floor plan points up-right, so the kitchen window and the living window next to it face south-east (≈135°); the three side windows of the living room face north-east (≈45°). Nothing outside is modelled as blocking the sun — at 13 floors up that is close to reality, but check neighbouring towers.</div>
+
+    <h2 id="asec-b2">Bedroom 2 — wardrobes, vanity, bed</h2>
+    <div style="display:flex;gap:6px;margin-bottom:10px"><button class="v" id="b2View" style="padding:6px 10px">View the wardrobes</button><button class="v" id="b2PlanB" style="padding:6px 10px">From above</button></div>
+    <div class="mat"><div class="cap"><span>Vanity</span></div><div class="seg" id="b2Van"><button data-v="pull">Pull-out top in the wardrobe</button><button data-v="king">King 100 cm in a niche</button></div></div>
+    <div class="mat" id="b2PullRow"><div class="cap"><span>Vanity top pulled out</span><b id="b2PullV" style="color:var(--ink)"></b></div><input type="range" id="b2Pull" min="0" max="400" step="10"></div>
+    <div class="mat"><div class="cap"><span>Bed width</span></div><div class="seg" id="b2Bed"><button data-b="120">120</button><button data-b="140">140</button><button data-b="160">160</button></div></div>
+    <div class="mat"><div class="cap"><span>Wardrobe beside the door — depth</span></div><div class="seg" id="b2D1"><button data-d="600">600</button><button data-d="450">450 (switch stays free)</button></div></div>
+    <div class="mat"><div class="cap"><span>Wardrobe fronts</span></div><div class="seg" id="b2Col"><button data-c="white">White</button><button data-c="mag">Magnolia</button><button data-c="oak">Oak</button></div></div>
+    <label class="t"><input type="checkbox" id="b2Open"> Open the wardrobe doors (show inside)</label>
+    <div id="b2Info" style="margin-top:6px"></div>
 
     <h2>Window frames <span style="text-transform:none;letter-spacing:0;font-weight:400">(colour not on the drawings)</span></h2>
     <div class="seg" id="kFrame"><button data-f="anth">Anthracite</button><button data-f="white">White</button></div>
