@@ -34,11 +34,20 @@
   .lbl.d{background:var(--drw)} .lbl.a{background:var(--asm)} .lbl.w{background:var(--warn)}
   #hint{position:absolute;left:12px;bottom:10px;font-size:12px;color:var(--mute);background:rgba(255,253,249,.85);padding:4px 8px;border-radius:6px}
   #toggle{display:none}
+  .autoNote{font-size:12px;background:#eef5ee;color:#2f5f3a;border-radius:6px;padding:5px 8px;margin:6px 0}
+  .seg button[disabled]{opacity:.4;cursor:not-allowed}
   #rooms{display:flex;gap:6px;margin:0 0 14px}
   #rooms button{flex:1;border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 6px;font:inherit;font-size:13px;font-weight:500;cursor:pointer;color:var(--ink)}
   #rooms button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
   .lbl.rm{background:rgba(43,40,36,.82);font-size:12px;padding:4px 8px;text-align:center;line-height:1.25}
   .lbl.rm span{display:block;font-weight:400;font-size:11px;opacity:.8}
+  details.grp{border-top:1px solid var(--line);margin:0}
+  details.grp>summary{cursor:pointer;list-style:none;font-weight:600;font-size:14px;padding:12px 2px;display:flex;justify-content:space-between;align-items:center}
+  details.grp>summary::-webkit-details-marker{display:none}
+  details.grp>summary::after{content:"+";font-weight:400;color:var(--mute);font-size:18px}
+  details.grp[open]>summary::after{content:"\2212"}
+  details.grp .grpb{padding:0 0 14px}
+  h3.sub3{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);margin:14px 0 6px;font-weight:600}
   #jump,#kjump,nav.jn{position:sticky;top:-18px;z-index:2;background:var(--card);display:flex;flex-wrap:wrap;gap:5px;padding:8px 0 10px;margin:0 0 4px;border-bottom:1px solid var(--line)}
   #jump a,#kjump a,nav.jn a{font-size:12px;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:3px 9px;background:#fff}
   #jump a:hover,#kjump a:hover,nav.jn a:hover{border-color:#c9bfb0}
@@ -103,6 +112,9 @@
 
     <h2 id="sec-fix">Fixtures — choose &amp; compare</h2>
     <div id="optUI"></div>
+
+    <h2 id="sec-store">Vanity &amp; tall cabinet</h2>
+    <div id="storeUI"></div>
 
     <h2 id="sec-wc">Around the WC: roll holder, bidet, radiator, shelves &amp; cabinet</h2>
     <div id="shelfUI"></div>
@@ -289,6 +301,58 @@
   <div id="pad"><button data-m="up" title="Move room up">▲</button><button data-m="left" title="Move left">◀</button><button data-m="center" title="Centre the room">◎</button><button data-m="right" title="Move right">▶</button><button data-m="down" title="Move room down">▼</button></div></main>
 </div>
 
+<script>/* Options panel organizer: every section becomes a collapsible group; reference material goes to the bottom. */
+(function(){
+  const REF=/^(Open points|From the drawing|Assumed|Legend|Rooms \(floor|Materials|Ceiling height)/i;
+  const BATH=[
+    ['Camera & view',      /^(Camera|Show)$/],
+    ['Shower, toilet & basin', /^Fixtures/],
+    ['Vanity & tall cabinet',  /^Vanity &/],
+    ['Toilet wall: pre-wall, bidet, shelves', /^Around the WC/],
+    ['Tiles',              /^Tiles$/],
+    ['Costs',              /^(Tiles — quantities|Sanitary|Compare all)/],
+    ['Room size & reference', REF] ];
+  let open={}; try{ open=JSON.parse(localStorage.getItem('oost-groups')||'{}'); }catch(e){}
+  const save=()=>{ try{ localStorage.setItem('oost-groups',JSON.stringify(open)); }catch(e){} };
+  function sections(root){            // [{title, nodes}] split at each h2 (direct children only)
+    const out=[], pre=[]; let cur=null;
+    for(const n of [...root.childNodes]){
+      if(n.nodeType===1 && n.tagName==='H2'){ cur={title:(n.firstChild&&n.firstChild.textContent||n.textContent).trim(), h:n, nodes:[]}; out.push(cur); }
+      else if(cur) cur.nodes.push(n); else pre.push(n);
+    }
+    return {pre,out};
+  }
+  function group(root, key, title, secs, isOpen){
+    const d=document.createElement('details'); d.className='grp'; const k=key+':'+title;
+    d.open= k in open? open[k] : isOpen;
+    d.addEventListener('toggle',()=>{ open[k]=d.open; save(); });
+    const s=document.createElement('summary'); s.textContent=title; d.appendChild(s);
+    const body=document.createElement('div'); body.className='grpb'; d.appendChild(body);
+    secs.forEach((sec,i)=>{ if(secs.length>1 || sec.title!==title){ const h=document.createElement('h3'); h.className='sub3'; h.innerHTML=sec.h.innerHTML; if(sec.h.id) h.id=sec.h.id; if(!(secs.length===1)) body.appendChild(h); else if(sec.h.id) body.appendChild(Object.assign(document.createElement('span'),{id:sec.h.id})); } else if(sec.h.id) body.appendChild(Object.assign(document.createElement('span'),{id:sec.h.id}));
+      sec.nodes.forEach(n=>body.appendChild(n)); sec.h.remove(); });
+    root.appendChild(d); return d;
+  }
+  function organize(root, key, plan, firstOpen){
+    if(!root) return;
+    root.querySelectorAll(':scope > nav#jump, :scope > nav.jn, :scope > nav#kjump').forEach(n=>n.remove());
+    const {out}=sections(root); if(!out.length) return;
+    const used=new Set(), groups=[];
+    if(plan){ for(const [t,re] of plan){ const ss=out.filter(s=>!used.has(s)&&re.test(s.title)); ss.forEach(s=>used.add(s)); if(ss.length) groups.push([t,ss]); } }
+    const rest=out.filter(s=>!used.has(s)), ref=rest.filter(s=>REF.test(s.title)), main=rest.filter(s=>!REF.test(s.title));
+    main.forEach(s=>groups.push([s.title.replace(/\s+\(.*$/,''),[s]]));
+    if(ref.length) groups.push(['Reference & notes',ref]);
+    groups.forEach(([t,ss],i)=>group(root,key,t,ss,firstOpen.includes(t)));
+  }
+  // bath: the evening-light checkbox belongs with the view settings
+  const eve=document.getElementById('cEve'); const sh=[...document.querySelectorAll('#pBath > h2')].find(h=>/^Show$/.test(h.textContent.trim()));
+  if(eve && sh){ let n=sh.nextElementSibling; while(n && n.tagName!=='H2' && n.nextElementSibling && n.nextElementSibling.tagName!=='H2') n=n.nextElementSibling; n.after(eve.closest('label')); }
+  organize(document.getElementById('pBath'),'bath',BATH,['Camera & view','Vanity & tall cabinet']);
+  const sp=document.getElementById('pShared');
+  if(sp){ const {out}=sections(sp); const cs=out.filter(s=>/^(Camera|Show)$/.test(s.title)); if(cs.length) group(sp,'shared','Camera & view',cs,true); }
+  organize(document.getElementById('pApt'),'apt',null,[]);
+  organize(document.getElementById('pKit'),'kit',null,[]);
+})();
+</script>
 <script>window.__DEFAULT_MODE='bath';</script>
 <script type="module" src="../assets/model.js"></script>
 </body>
